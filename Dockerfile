@@ -23,4 +23,4 @@ RUN npm install --production
 EXPOSE 80 3000
 
 # Start both nginx and node using a process manager
-CMD ["npm", "start", "&&", "service", "nginx", "start" ]
+CMD ["service", "nginx", "start", "&&", "npm", "start"]
