@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const port = 3000;
-const host = '192.168.0.7';
+const host = '127.0.0.1';
 const prefix = '/api/v1';
 const app = express();
 
