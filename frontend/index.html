@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>API Data Fetcher</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 32px;
+            background: #f9f9f9;
+        }
+        .container {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px #0001;
+            max-width: 500px;
+            margin: auto;
+            padding: 24px;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            background: #fafafa;
+        }
+        td {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        .result, .error {
+            margin: 12px 0;
+            padding: 12px;
+            border-radius: 4px;
+        }
+        .result {
+            background: #e8fbee;
+            color: #239235;
+        }
+        .error {
+            background: #fbe8e8;
+            color: #c0392b;
+        }
+        .form-group {
+            margin-bottom: 12px;
+        }
+        label {
+            display: inline-block;
+            margin-bottom: 4px;
+        }
+        input {
+            width: 100%;
+            padding: 6px;
+            font-size: 1em;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 8px 20px;
+            background: #2980b9;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #1a5e8a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>API v1 Demo</h1>
+
+        <button id="getBtn">GET Data</button>
+        <div id="getResult"></div>
+        <hr>
+
+        <h2>POST Data</h2>
+        <form id="postForm">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required value="Jane Doe">
+            </div>
+            <div class="form-group">
+                <label for="age">Age:</label>
+                <input type="number" id="age" name="age" required value="25">
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required value="jane.doe@example.com">
+            </div>
+            <button type="submit">POST Data</button>
+        </form>
+        <div id="postResult"></div>
+    </div>
+    <script>
+        const apiUrl = "http://192.168.0.7:3000/api/v1";
+
+        // GET data logic
+        document.getElementById('getBtn').addEventListener('click', async () => {
+            const resultDiv = document.getElementById('getResult');
+            resultDiv.innerHTML = '';
+            try {
+                const response = await fetch(apiUrl + "/get-user");
+                const data = await response.json();
+                console.log(data);
+                if (data.status === "success") {
+                    resultDiv.innerHTML = `
+                        <div class="result">
+                            <strong>${data.message}</strong>
+                            <table>
+                                <tr><td>Name</td><td>${data.data.name}</td></tr>
+                                <tr><td>Age</td><td>${data.data.age}</td></tr>
+                                <tr><td>Email</td><td>${data.data.email}</td></tr>
+                            </table>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">Error: ${data.message || 'Unknown error.'}</div>`;
+                }
+            } catch (err) {
+                resultDiv.innerHTML = `<div class="error">Fetch error: ${err.message}</div>`;
+            }
+        });
+
+        // POST data logic
+        document.getElementById('postForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const postResultDiv = document.getElementById('postResult');
+            postResultDiv.innerHTML = '';
+            const name = document.getElementById('name').value;
+            const age = document.getElementById('age').value;
+            const email = document.getElementById('email').value;
+
+            try {
+                const response = await fetch(apiUrl + "/create-user", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, age, email })
+                });
+                const data = await response.json();
+                if (data.status === "success") {
+                    postResultDiv.innerHTML = `
+                        <div class="result">
+                            <strong>${data.message}</strong>
+                            <table>
+                                ${Object.entries(data.data).map(([key,val])=>`<tr><td>${key}</td><td>${val}</td></tr>`).join('')}
+                            </table>
+                        </div>
+                    `;
+                } else {
+                    postResultDiv.innerHTML = `<div class="error">Error: ${data.message || 'Unknown error.'}</div>`;
+                }
+            } catch (err) {
+                postResultDiv.innerHTML = `<div class="error">Fetch error: ${err.message}</div>`;
+            }
+        });
+    </script>
+</body>
+</html>
