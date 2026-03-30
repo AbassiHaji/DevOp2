@@ -1,7 +1,7 @@
 {
-    "name": "slide",
+    "name": "docker-demo",
     "version": "1.0.0",
-    "description": "Slide",
+    "description": "Docker Demo",
     "main": "app.js",
     "scripts": {
         "start": "node app.js"
