@@ -11,11 +11,9 @@ const sequelize = new Sequelize(
     dbConfig.username,
     dbConfig.password,
     {
-        port: dbConfig.port
-    },
-    {
         host: dbConfig.host,
-        dialect: dbConfig.dialect
+        dialect: dbConfig.dialect,
+        port: dbConfig.port
     }
 );
 
