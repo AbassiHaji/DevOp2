@@ -9,4 +9,4 @@ COPY ./backend .
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["sh", "-c", "node migration.js && node app.js"]
