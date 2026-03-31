@@ -12,8 +12,8 @@ const app = express();
 // CORS middleware to set Access-Control-Allow-Origin header
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*'); // You can restrict this to your frontend's origin if needed
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     // Handle preflight requests quickly
     if (req.method === 'OPTIONS') {
         return res.sendStatus(204);
