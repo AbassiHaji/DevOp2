@@ -14,10 +14,11 @@ services:
       - db-data:/var/lib/postgresql/data
 
   backend:
-    image: node:18-alpine
+    build: .
+    working_dir: /app
     environment:
       NODE_ENV: development
-      DB_HOST: ${DB_HOST}
+      DB_HOST: db
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
@@ -35,6 +36,6 @@ services:
       - "9001:80"
     depends_on:
       - backend
-
+      
 volumes:
   db-data:
