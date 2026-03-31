@@ -84,26 +84,34 @@
         <div id="getResult"></div>
         <hr>
 
-        <h2>POST Data</h2>
-        <form id="postForm">
+        <h2>Create User</h2>
+        <form id="createUserForm">
             <div class="form-group">
-                <label for="name">Name:</label>
-                <input type="text" id="name" name="name" required value="Jane Doe">
+                <label for="first_name">First Name:</label>
+                <input type="text" id="first_name" name="first_name" required value="John">
             </div>
             <div class="form-group">
-                <label for="age">Age:</label>
-                <input type="number" id="age" name="age" required value="25">
+                <label for="last_name">Last Name:</label>
+                <input type="text" id="last_name" name="last_name" required value="Doe">
             </div>
             <div class="form-group">
                 <label for="email">Email:</label>
                 <input type="email" id="email" name="email" required value="jane.doe@example.com">
             </div>
-            <button type="submit">POST Data</button>
+            <div class="form-group">
+                <label for="password_hash">Password:</label>
+                <input type="password" id="password_hash" name="password_hash" required value="123456">
+            </div>
+            <div class="form-group">
+                <label for="age">Age:</label>
+                <input type="number" id="age" name="age" required value="20">
+            </div>
+            <button type="submit">Create User</button>
         </form>
-        <div id="postResult"></div>
+        <div id="createUserResult"></div>
     </div>
     <script>
-        const apiUrl = "http://192.168.0.7:3000/api/v1";
+        const apiUrl = "http://localhost:3000/api/v1";
 
         // GET data logic
         document.getElementById('getBtn').addEventListener('click', async () => {
@@ -113,19 +121,29 @@
                 const response = await fetch(apiUrl + "/get-user");
                 const data = await response.json();
                 console.log(data);
-                if (data.status === "success") {
+                // The backend returns an array for /get-user, not {status, ...}.
+                if (Array.isArray(data)) {
                     resultDiv.innerHTML = `
                         <div class="result">
-                            <strong>${data.message}</strong>
+                            <strong>Fetched ${data.length} users.</strong>
                             <table>
-                                <tr><td>Name</td><td>${data.data.name}</td></tr>
-                                <tr><td>Age</td><td>${data.data.age}</td></tr>
-                                <tr><td>Email</td><td>${data.data.email}</td></tr>
+                                <tr><td><b>ID</b></td><td><b>First Name</b></td><td><b>Last Name</b></td><td><b>Age</b></td><td><b>Email</b></td></tr>
+                                ${data.map((user)=>
+                                    `<tr>
+                                        <td>${user.id}</td>
+                                        <td>${user.first_name}</td>
+                                        <td>${user.last_name}</td>
+                                        <td>${user.age}</td>
+                                        <td>${user.email}</td>
+                                    </tr>`
+                                ).join('')}
                             </table>
                         </div>
                     `;
-                } else {
+                } else if (data.status === "error") {
                     resultDiv.innerHTML = `<div class="error">Error: ${data.message || 'Unknown error.'}</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">Unexpected response format.</div>`;
                 }
             } catch (err) {
                 resultDiv.innerHTML = `<div class="error">Fetch error: ${err.message}</div>`;
@@ -133,34 +151,51 @@
         });
 
         // POST data logic
-        document.getElementById('postForm').addEventListener('submit', async (e) => {
+        document.getElementById('createUserForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const postResultDiv = document.getElementById('postResult');
+            const postResultDiv = document.getElementById('createUserResult');
             postResultDiv.innerHTML = '';
-            const name = document.getElementById('name').value;
-            const age = document.getElementById('age').value;
-            const email = document.getElementById('email').value;
 
+            // Grab the values from the form inputs using proper variable names
+            // These must match backend expects: first_name, last_name, email, password_hash, age
+            const first_name = document.getElementById('first_name').value;
+            const last_name = document.getElementById('last_name').value;
+            const email = document.getElementById('email').value;
+            const password_hash = document.getElementById('password_hash').value;
+            const age = document.getElementById('age').value;
+
+            // first_name, last_name are submitted as part of the JSON object because the backend (Express/Sequelize) expects
+            // user data as a single object, not as URL-encoded fields (like form fields or query params). So, when sending 
+            // JSON, you put all user properties in one JS object and serialize it (see below).
             try {
                 const response = await fetch(apiUrl + "/create-user", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ name, age, email })
+                    body: JSON.stringify({ first_name, last_name, email, password_hash, age })
                 });
                 const data = await response.json();
-                if (data.status === "success") {
+                if (!data.status) {
+                    // backend returns the created user object, so show the values
                     postResultDiv.innerHTML = `
                         <div class="result">
-                            <strong>${data.message}</strong>
+                            <strong>User created successfully!</strong>
                             <table>
-                                ${Object.entries(data.data).map(([key,val])=>`<tr><td>${key}</td><td>${val}</td></tr>`).join('')}
+                                <tr>
+                                    <td>${data.id}</td>
+                                    <td>${data.first_name}</td>
+                                    <td>${data.last_name}</td>
+                                    <td>${data.age}</td>
+                                    <td>${data.email}</td>
+                                </tr>
                             </table>
                         </div>
                     `;
-                } else {
+                } else if (data.status === "error") {
                     postResultDiv.innerHTML = `<div class="error">Error: ${data.message || 'Unknown error.'}</div>`;
+                } else {
+                    postResultDiv.innerHTML = `<div class="error">Unexpected response format.</div>`;
                 }
             } catch (err) {
                 postResultDiv.innerHTML = `<div class="error">Fetch error: ${err.message}</div>`;
