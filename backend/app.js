@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 const { UserDetail } = require('./model');
+const cors = require('cors');
 dotenv.config();
 
 const port = process.env.SERVER_PORT;
@@ -9,18 +10,12 @@ const host = process.env.SERVER_HOST;
 const prefix = process.env.API_PREFIX;
 const app = express();
 
-// CORS middleware to set Access-Control-Allow-Origin header
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*'); // You can restrict this to your frontend's origin if needed
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    // Handle preflight requests quickly
-    if (req.method === 'OPTIONS') {
-        return res.sendStatus(204);
-    }
-    next();
-});
-
+app.use(cors({
+    origin: "*", // or your frontend URL
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true
+  }));
+  
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
