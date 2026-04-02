@@ -28,25 +28,24 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
-            steps {
-                sh '''
-                  echo "Deploying project..."
-                  # Replace with your actual deploy command
-                  # Example: docker-compose up -d --build OR kubectl apply -f k8s/deployment.yaml
-                '''
+                    stage('Deploy') {
+                steps {
+                    sh '''
+                      echo "Deploying project..."
+                      docker-compose up -d --build
+                    '''
+                }
             }
-        }
+            
+            stage('Health Check') {
+                steps {
+                    sh '''
+                      echo "Running health check..."
+                      curl -f http://localhost:3000/health || exit 1
+                    '''
+                }
+            }
 
-        stage('Health Check') {
-            steps {
-                sh '''
-                  echo "Running health check..."
-                  # Replace with your actual health endpoint
-                  curl -f http://localhost:3000/health || exit 1
-                '''
-            }
-        }
 
         stage('Integration Test') {
             steps {
