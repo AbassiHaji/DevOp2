@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        # Define SERVER_PORT here so docker-compose sees it
+        // Define SERVER_PORT here so docker-compose sees it
         SERVER_PORT = "3000"
     }
 
@@ -40,7 +40,6 @@ pipeline {
             steps {
                 sh '''
                   echo "Deploying project..."
-                  # Run docker-compose with SERVER_PORT defined
                   docker-compose up -d --build
                 '''
             }
