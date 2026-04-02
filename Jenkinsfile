@@ -17,8 +17,7 @@ pipeline {
             steps {
                 sh '''
                   echo "Building project..."
-                  # Example: npm install or mvn clean package
-                  # Replace with your actual build command
+                  # Example: mvn clean package OR npm install
                 '''
             }
         }
@@ -27,8 +26,25 @@ pipeline {
             steps {
                 sh '''
                   echo "Deploying project..."
-                  # Example: docker-compose up -d or kubectl apply -f
-                  # Replace with your actual deployment command
+                  # Example: docker-compose up -d --build
+                '''
+            }
+        }
+
+        stage('Health Check') {
+            steps {
+                sh '''
+                  echo "Running health check..."
+                  # Example: curl -f http://localhost:8080/health || exit 1
+                '''
+            }
+        }
+
+        stage('Integration Test') {
+            steps {
+                sh '''
+                  echo "Running integration tests..."
+                  # Example: npm run test:integration OR mvn verify -Pintegration
                 '''
             }
         }
