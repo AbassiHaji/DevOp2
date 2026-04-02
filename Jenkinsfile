@@ -5,10 +5,13 @@ pipeline {
         stage('Inject Secrets') {
             steps {
                 sh '''
-                  cp /home/kist/docker/Dev_app/.env .
+                  cp /var/lib/jenkins/workspace/project_Dev/.env
+
                   mkdir -p backend
-                  cp /home/kist/docker/Dev_app/backend/.env backend/
-                  cp /home/kist/docker/Dev_app/backend/config.json backend/
+                  cp /var/lib/jenkins/workspace/project_Dev/backend/.env
+
+                  cp /var/lib/jenkins/workspace/project_Dev/backend/config.json
+
                 '''
             }
         }
