@@ -5,40 +5,56 @@ pipeline {
         stage('Inject Secrets') {
             steps {
                 sh '''
-                  # Copy the root .env file
-                  cp .env . 
+                  # Create a deploy folder
+                  mkdir -p deploy/backend
 
-                  # Ensure backend folder exists
-                  mkdir -p backend
+                  # Copy root .env into deploy folder
+                  cp .env deploy/.env
 
-                  # Copy backend secrets and config
-                  cp backend/.env backend/
-                  cp backend/config.json backend/
+                  # Copy backend secrets and config into deploy/backend
+                  cp backend/.env deploy/backend/.env
+                  cp backend/config.json deploy/backend/config.json
                 '''
             }
         }
 
         stage('Build') {
             steps {
-                sh 'echo "Building project..."'
+                sh '''
+                  echo "Building project..."
+                  # Replace with your actual build command
+                  # Example: mvn clean package OR npm install
+                '''
             }
         }
 
         stage('Deploy') {
             steps {
-                sh 'echo "Deploying project..."'
+                sh '''
+                  echo "Deploying project..."
+                  # Replace with your actual deploy command
+                  # Example: docker-compose up -d --build OR kubectl apply -f k8s/deployment.yaml
+                '''
             }
         }
 
         stage('Health Check') {
             steps {
-                sh 'curl -f http://localhost:3000/health || exit 1'
+                sh '''
+                  echo "Running health check..."
+                  # Replace with your actual health endpoint
+                  curl -f http://localhost:3000/health || exit 1
+                '''
             }
         }
 
         stage('Integration Test') {
             steps {
-                sh 'echo "Running integration tests..."'
+                sh '''
+                  echo "Running integration tests..."
+                  # Replace with your actual integration test command
+                  # Example: npm run test:integration OR mvn verify -Pintegration
+                '''
             }
         }
     }
