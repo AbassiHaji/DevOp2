@@ -1,5 +1,5 @@
 pipeline {
-    agent any   // runs on any available agent
+    agent any
 
     stages {
         stage('Inject Secrets') {
@@ -9,6 +9,26 @@ pipeline {
                   mkdir -p backend
                   cp /home/kist/docker/Dev_app/backend/.env backend/
                   cp /home/kist/docker/Dev_app/backend/config.json backend/
+                '''
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh '''
+                  echo "Building project..."
+                  # Example: npm install or mvn clean package
+                  # Replace with your actual build command
+                '''
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh '''
+                  echo "Deploying project..."
+                  # Example: docker-compose up -d or kubectl apply -f
+                  # Replace with your actual deployment command
                 '''
             }
         }
