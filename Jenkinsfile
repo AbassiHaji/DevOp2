@@ -5,50 +5,40 @@ pipeline {
         stage('Inject Secrets') {
             steps {
                 sh '''
-                  cp /var/lib/jenkins/workspace/project_Dev/.env
+                  # Copy the root .env file
+                  cp .env . 
 
+                  # Ensure backend folder exists
                   mkdir -p backend
-                  cp /var/lib/jenkins/workspace/project_Dev/backend/.env
 
-                  cp /var/lib/jenkins/workspace/project_Dev/backend/config.json
-
+                  # Copy backend secrets and config
+                  cp backend/.env backend/
+                  cp backend/config.json backend/
                 '''
             }
         }
 
         stage('Build') {
             steps {
-                sh '''
-                  echo "Building project..."
-                  # Example: mvn clean package OR npm install
-                '''
+                sh 'echo "Building project..."'
             }
         }
 
         stage('Deploy') {
             steps {
-                sh '''
-                  echo "Deploying project..."
-                  # Example: docker-compose up -d --build
-                '''
+                sh 'echo "Deploying project..."'
             }
         }
 
         stage('Health Check') {
             steps {
-                sh '''
-                  echo "Running health check..."
-                  # Example: curl -f http://localhost:8080/health || exit 1
-                '''
+                sh 'curl -f http://localhost:3000/health || exit 1'
             }
         }
 
         stage('Integration Test') {
             steps {
-                sh '''
-                  echo "Running integration tests..."
-                  # Example: npm run test:integration OR mvn verify -Pintegration
-                '''
+                sh 'echo "Running integration tests..."'
             }
         }
     }
